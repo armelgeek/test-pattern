@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tests d'Orchestration</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #4ec9b0;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+
+    .info {
+      background: #252526;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-left: 4px solid #4ec9b0;
+    }
+
+    .console-output {
+      background: #252526;
+      padding: 20px;
+      border-radius: 5px;
+      font-size: 0.9em;
+      line-height: 1.6;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .log-line {
+      margin-bottom: 5px;
+    }
+
+    .log-test {
+      color: #4ec9b0;
+      font-weight: bold;
+    }
+
+    .log-success {
+      color: #4ec9b0;
+    }
+
+    .log-error {
+      color: #f48771;
+    }
+
+    .log-info {
+      color: #569cd6;
+    }
+
+    .log-warning {
+      color: #dcdcaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Tests d'Orchestration</h1>
+    
+    <div class="info">
+      <strong>Page de test automatique</strong><br>
+      Cette page exécute les tests d'orchestration et affiche les résultats.
+      Ouvrez la console développeur pour voir tous les détails.
+    </div>
+
+    <div class="console-output" id="output">
+      <div class="log-line log-info">Chargement des tests...</div>
+    </div>
+  </div>
+
+  <script type="module" src="./test-orchestration.ts"></script>
+  <script>
+    const output = document.getElementById('output');
+
+    // Intercepter console.log
+    const originalLog = console.log;
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      
+      let className = 'log-line';
+      if (message.includes('✓') || message.includes('✅')) {
+        className += ' log-success';
+      } else if (message.includes('❌') || message.includes('ERREUR')) {
+        className += ' log-error';
+      } else if (message.includes('Test') || message.includes('===')) {
+        className += ' log-test';
+      } else if (message.includes('⚠️') || message.includes('Warning')) {
+        className += ' log-warning';
+      }
+      
+      const div = document.createElement('div');
+      div.className = className;
+      div.textContent = message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    };
+
+    // Intercepter console.error
+    const originalError = console.error;
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      
+      const div = document.createElement('div');
+      div.className = 'log-line log-error';
+      div.textContent = '❌ ' + message;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    };
+  </script>
+</body>
+</html>
