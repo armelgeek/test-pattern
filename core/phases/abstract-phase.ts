@@ -104,17 +104,23 @@ export abstract class PhaseBase<TState = any> {
     return stateManager.bridge;
   }
 
+  /** Vérifie si le bridge est disponible et log un warning si non */
+  private ensureBridge(stateManager: StateManager<TState>, methodName: string) {
+    const bridge = stateManager.bridge;
+    if (!bridge) {
+      console.warn(`${methodName} appelé sans bridge`);
+    }
+    return bridge;
+  }
+
   /** Helper pour envoyer un message à Unity depuis une phase */
   protected sendToUnity<T extends string, P = any>(
     stateManager: StateManager<TState>,
     messageType: T,
     data: P
   ): void {
-    const bridge = stateManager.bridge;
-    if (!bridge) {
-      console.warn('sendToUnity appelé sans bridge');
-      return;
-    }
+    const bridge = this.ensureBridge(stateManager, 'sendToUnity');
+    if (!bridge) return;
     bridge.send(messageType, data);
   }
 
@@ -124,11 +130,8 @@ export abstract class PhaseBase<TState = any> {
     messageType: string,
     handler: (data: P) => void
   ): void {
-    const bridge = stateManager.bridge;
-    if (!bridge) {
-      console.warn('onUnityMessage appelé sans bridge');
-      return;
-    }
+    const bridge = this.ensureBridge(stateManager, 'onUnityMessage');
+    if (!bridge) return;
     const unsubscribe = bridge.on(messageType, handler);
     this.addCleanup(unsubscribe);
   }
