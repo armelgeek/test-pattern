@@ -1,4 +1,5 @@
 import { SpeechService } from "../services/speech-service";
+import type { AbstractBridge } from "../services/abstract-bridge";
 
 /**
  * StateManager générique pour n'importe quel jeu
@@ -10,11 +11,13 @@ export class StateManager<TState = any> {
   private listeners: Set<(state: TState, prevState: TState) => void> = new Set();
   private eventListeners: Map<string, Set<(data: any) => void>> = new Map();
   public speech?: SpeechService;
+  public bridge?: AbstractBridge;
 
-  constructor(initialState: TState, speech?: SpeechService) {
+  constructor(initialState: TState, speech?: SpeechService, bridge?: AbstractBridge) {
     this.state = initialState;
     this.prevState = { ...initialState };
     this.speech = speech;
+    this.bridge = bridge;
   }
 
   getState(): TState {

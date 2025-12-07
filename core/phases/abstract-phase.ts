@@ -98,4 +98,38 @@ export abstract class PhaseBase<TState = any> {
     }
     return this._orchestrator.getGameState();
   }
+
+  /** Helper pour obtenir le Unity Bridge depuis une phase */
+  protected getBridge(stateManager: StateManager<TState>) {
+    return stateManager.bridge;
+  }
+
+  /** Helper pour envoyer un message à Unity depuis une phase */
+  protected sendToUnity<T extends string, P = any>(
+    stateManager: StateManager<TState>,
+    messageType: T,
+    data: P
+  ): void {
+    const bridge = stateManager.bridge;
+    if (!bridge) {
+      console.warn('sendToUnity appelé sans bridge');
+      return;
+    }
+    bridge.send(messageType, data);
+  }
+
+  /** Helper pour écouter un message Unity depuis une phase */
+  protected onUnityMessage<P = any>(
+    stateManager: StateManager<TState>,
+    messageType: string,
+    handler: (data: P) => void
+  ): void {
+    const bridge = stateManager.bridge;
+    if (!bridge) {
+      console.warn('onUnityMessage appelé sans bridge');
+      return;
+    }
+    const unsubscribe = bridge.on(messageType, handler);
+    this.addCleanup(unsubscribe);
+  }
 }

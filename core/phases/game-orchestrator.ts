@@ -1,6 +1,7 @@
 import { SpeechService } from "../services/speech-service";
 import { StateManager } from "./state";
 import { PhaseBase } from "./abstract-phase";
+import type { AbstractBridge } from "../services/abstract-bridge";
 
 /**
  * GameOrchestrator: classe abstraite que chaque jeu doit implémenter
@@ -9,17 +10,20 @@ import { PhaseBase } from "./abstract-phase";
 export abstract class GameOrchestrator<TGameState = any> {
   protected state: StateManager;
   protected speech?: SpeechService;
+  protected bridge?: AbstractBridge;
   protected gameState: TGameState;
   private phases: PhaseBase[] = [];
   private currentIndex = -1;
   private isRunning = false;
 
-  constructor(state: StateManager, speech?: SpeechService) {
+  constructor(state: StateManager, speech?: SpeechService, bridge?: AbstractBridge) {
     this.state = state;
     this.speech = speech;
+    this.bridge = bridge;
     
-    // Injecter speech dans state pour les phases
+    // Injecter speech et bridge dans state pour les phases
     (this.state as any).speech = speech;
+    (this.state as any).bridge = bridge;
     
     // Initialiser le game state
     this.gameState = this.getDefaultGameState();
@@ -129,5 +133,10 @@ export abstract class GameOrchestrator<TGameState = any> {
   /** Obtenir toutes les phases */
   getPhases(): PhaseBase[] {
     return this.phases;
+  }
+
+  /** Obtenir le bridge Unity */
+  getBridge(): AbstractBridge | undefined {
+    return this.bridge;
   }
 }
