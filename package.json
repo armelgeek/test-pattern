@@ -1,0 +1,17 @@
+{
+  "name": "test-pattern",
+  "version": "1.0.0",
+  "description": "Exemple d'orchestration de jeu avec Unity Bridge",
+  "scripts": {
+    "dev": "parcel example/index.html",
+    "build": "parcel build example/index.html --dist-dir dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["orchestration", "unity", "game", "phases"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.16.3",
+    "typescript": "^5.9.3"
+  }
+}

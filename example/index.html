@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exemple d'Orchestration Simple</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+
+    .info-box {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .info-box h2 {
+      color: #333;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .info-box p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .info-box ul {
+      color: #666;
+      line-height: 1.8;
+      margin-left: 20px;
+    }
+
+    .console-box {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .console-title {
+      color: #4ec9b0;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      margin-left: 10px;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f5e9;
+      border-radius: 8px;
+      color: #2e7d32;
+    }
+
+    .status.running {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .feature-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .feature-card h3 {
+      color: #667eea;
+      font-size: 1em;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: #666;
+      font-size: 0.9em;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Exemple d'Orchestration Simple</h1>
+    <p class="subtitle">Démonstration de l'orchestration de phases avec Unity Bridge</p>
+
+    <div class="info-box">
+      <h2>📋 À propos de cet exemple</h2>
+      <p>Cet exemple démontre comment créer un jeu avec orchestration de phases et communication Unity sans avoir Unity installé. Il utilise un <strong>MockUnityBridge</strong> pour simuler les communications.</p>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <h3>✅ Orchestration</h3>
+        <p>Enchaînement automatique de phases avec transitions fluides</p>
+      </div>
+      <div class="feature-card">
+        <h3>📨 Messages Unity</h3>
+        <p>Envoi et réception de messages dans chaque phase</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔄 State Management</h3>
+        <p>Gestion centralisée de l'état du jeu</p>
+      </div>
+      <div class="feature-card">
+        <h3>🎯 Phase Lifecycle</h3>
+        <p>Gestion complète du cycle de vie des phases</p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h2>🔍 Phases du jeu</h2>
+      <ul>
+        <li><strong>Introduction</strong> - Démarre le jeu et envoie les messages initiaux</li>
+        <li><strong>Interactive</strong> - Attend les interactions utilisateur (clics Unity)</li>
+        <li><strong>Calcul</strong> - Effectue des calculs et met à jour le score</li>
+        <li><strong>Conclusion</strong> - Termine le jeu et affiche le score final</li>
+      </ul>
+    </div>
+
+    <div class="button-group">
+      <button onclick="restartGame()">🔄 Redémarrer le jeu</button>
+      <button onclick="simulateClick()">🖱️ Simuler un clic Unity</button>
+      <button onclick="showGameState()">📊 Afficher l'état</button>
+      <button onclick="showBridgeStats()">📈 Stats du Bridge</button>
+    </div>
+
+    <div id="status" class="status running">
+      ⏳ Le jeu va démarrer automatiquement...
+    </div>
+
+    <div class="console-box">
+      <div class="console-title">📋 Console (ouvrez la console développeur pour plus de détails)</div>
+      <div id="console-output">Chargement...</div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+  <script>
+    let consoleOutput = [];
+    const maxLines = 20;
+
+    // Intercepter console.log pour l'afficher dans la page
+    const originalLog = console.log;
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      
+      consoleOutput.push(message);
+      if (consoleOutput.length > maxLines) {
+        consoleOutput.shift();
+      }
+      
+      updateConsoleDisplay();
+    };
+
+    function updateConsoleDisplay() {
+      const outputDiv = document.getElementById('console-output');
+      if (outputDiv) {
+        outputDiv.innerHTML = consoleOutput.map(line => 
+          `<div style="margin-bottom: 5px;">${escapeHtml(line)}</div>`
+        ).join('');
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function restartGame() {
+      const status = document.getElementById('status');
+      status.textContent = '🔄 Redémarrage du jeu...';
+      status.className = 'status running';
+      
+      if (window.gameOrchestrator) {
+        window.gameOrchestrator.resetGameState();
+        window.gameOrchestrator.initialize();
+        window.gameOrchestrator.start().then(() => {
+          status.textContent = '✅ Jeu terminé avec succès!';
+          status.className = 'status';
+        });
+      }
+    }
+
+    function simulateClick() {
+      if (window.simulateUnityClick) {
+        window.simulateUnityClick();
+        const status = document.getElementById('status');
+        status.textContent = '🖱️ Clic Unity simulé!';
+        setTimeout(() => {
+          status.textContent = '✅ En cours d\'exécution...';
+        }, 1000);
+      }
+    }
+
+    function showGameState() {
+      if (window.gameOrchestrator) {
+        const state = window.gameOrchestrator.getGameState();
+        console.log('État actuel du jeu:', state);
+        alert('État du jeu:\n' + JSON.stringify(state, null, 2));
+      }
+    }
+
+    function showBridgeStats() {
+      if (window.bridge) {
+        const stats = window.bridge.getStats();
+        console.log('Stats du bridge:', stats);
+        alert('Statistiques du Bridge:\n' + JSON.stringify(stats, null, 2));
+      }
+    }
+
+    // Mettre à jour le statut quand le jeu se termine
+    setTimeout(() => {
+      const status = document.getElementById('status');
+      status.textContent = '⏳ Jeu en cours d\'exécution...';
+    }, 1000);
+  </script>
+</body>
+</html>
